@@ -2,6 +2,10 @@
 
 A personal task manager with a web UI, REST API, and CLI — built with Flask and vanilla JS.
 
+## Screenshot
+
+![My Tasks](assets/screenshot.png)
+
 ## Features
 
 - **Add, edit, and delete tasks** with an optional description and due date

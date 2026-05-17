@@ -1,7 +1,7 @@
 import os
 import json
 import dateparser
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google.oauth2.credentials import Credentials
@@ -51,13 +51,17 @@ def get_tasks():
 @app.route("/tasks", methods=["POST"])
 def add_task():
     data = request.json
-    title = data.get("title", "").strip()
-    due_input = data.get("due", "").strip()
+    if not isinstance(data, dict):
+        return jsonify({"error": "Invalid request body"}), 400
+
+    title = (data.get("title") or "").strip()
+    description = (data.get("description") or "").strip()
+    due_input = (data.get("due") or "").strip()
 
     if not title:
         return jsonify({"error": "Title is required"}), 400
 
-    task = {"title": title, "done": False, "due": due_input or None, "due_formatted": None, "calendar_event_id": None}
+    task = {"title": title, "description": description or None, "done": False, "due": due_input or None, "due_formatted": None, "calendar_event_id": None, "calendar_event_link": None}
 
     if due_input:
         dt = dateparser.parse(due_input, settings={"PREFER_DATES_FROM": "future"})
@@ -67,19 +71,66 @@ def add_task():
                 service = get_calendar_service()
                 event = {
                     "summary": title,
+                    "description": description or "",
                     "start": {"dateTime": dt.isoformat(), "timeZone": "America/New_York"},
-                    "end": {"dateTime": dt.isoformat(), "timeZone": "America/New_York"},
+                    "end": {"dateTime": (dt + timedelta(hours=1)).isoformat(), "timeZone": "America/New_York"},
                 }
                 created = service.events().insert(calendarId="primary", body=event).execute()
                 task["calendar_event_id"] = created["id"]
+                task["calendar_event_link"] = created.get("htmlLink")
             except Exception as e:
                 print(f"Calendar error: {e}")
 
     tasks = load_tasks()
-    tasks.append(task)
+    tasks.insert(0, task)
     save_tasks(tasks)
 
     return jsonify(task), 201
+
+
+@app.route("/tasks/reorder", methods=["PUT"])
+def reorder_tasks():
+    order = request.json
+    if not isinstance(order, list):
+        return jsonify({"error": "Expected a list of indices"}), 400
+    tasks = load_tasks()
+    if any(i < 0 or i >= len(tasks) for i in order):
+        return jsonify({"error": "Index out of range"}), 400
+    reordered = [tasks[i] for i in order]
+    save_tasks(reordered)
+    return jsonify(reordered)
+
+
+@app.route("/tasks/<int:index>", methods=["PUT"])
+def update_task(index):
+    tasks = load_tasks()
+    if index < 0 or index >= len(tasks):
+        return jsonify({"error": "Task not found"}), 404
+
+    data = request.json
+    if not isinstance(data, dict):
+        return jsonify({"error": "Invalid request body"}), 400
+
+    title = (data.get("title") or "").strip()
+    if not title:
+        return jsonify({"error": "Title is required"}), 400
+
+    description = (data.get("description") or "").strip()
+    due_input = (data.get("due") or "").strip()
+
+    task = tasks[index]
+    task["title"] = title
+    task["description"] = description or None
+    task["due"] = due_input or None
+    task["due_formatted"] = None
+
+    if due_input:
+        dt = dateparser.parse(due_input, settings={"PREFER_DATES_FROM": "future"})
+        if dt:
+            task["due_formatted"] = dt.strftime("%A, %d %B %Y at %H:%M")
+
+    save_tasks(tasks)
+    return jsonify(task)
 
 
 @app.route("/tasks/<int:index>", methods=["PATCH"])

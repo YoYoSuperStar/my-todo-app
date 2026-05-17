@@ -39,22 +39,13 @@ Runs on `http://localhost:5000`. On first run a browser window will open for Goo
 
 Open `index.html` directly in your browser.
 
-### CLI version (no server needed)
-
-```
-python todo.py
-```
-
-Interactive loop — supports `add`, `complete`, `list`, and `quit`.
-
 ## Project structure
 
 | File | Role |
 |---|---|
 | `app.py` | Flask REST API |
 | `index.html` | Single-page web frontend |
-| `todo.py` | Standalone CLI |
-| `tasks.json` | JSON persistence (shared by both entry points) |
+| `tasks.json` | JSON persistence |
 | `credentials.json` | Google OAuth credentials (not committed) |
 | `token.json` | Auto-generated OAuth token (not committed) |
 

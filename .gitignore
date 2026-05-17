@@ -3,3 +3,13 @@ token.json
 tasks.json
 __pycache__/
 *.pyc
+
+# Node installer
+node-v*.msi
+
+# Skills
+skills-lock.json
+.agents/
+
+# Claude Code
+.claude/

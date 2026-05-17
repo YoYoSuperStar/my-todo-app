@@ -1,6 +1,6 @@
 # My Tasks
 
-A personal task manager with a web UI, REST API, and CLI — built with Flask and vanilla JS.
+A personal task manager with a web UI and REST API — built with Flask and vanilla JS.
 
 ## Screenshot
 

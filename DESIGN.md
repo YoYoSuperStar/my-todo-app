@@ -2,46 +2,45 @@
 
 ## Colour Palette
 
-| Role | Hex | Usage |
+CSS custom properties defined in `:root`:
+
+| Variable | Hex | Usage |
 |---|---|---|
-| **Blue accent** | `#5bb8f5` | Progress bar gradient end, donut fill |
-| **Title blue-gray** | `#7a8fa6` | App title ("My Tasks") |
-| **Purple primary** | `#8b7fd4` | Buttons, selected states, active stat, calendar fill, progress bar |
-| **Purple hover** | `#7a6ec3` | Hover state for purple buttons |
-| **Purple light** | `#f0eeff` | Calendar day hover background |
-| **Pink accent** | `#f472a8` | Task dot (colour 3 in rotation) |
-| **Page background** | `#f0f0f5` | Body, section dividers |
-| **Card background** | `#fff` | Sidebar, top bar, task cards, analytics card, calendar popup |
-| **Input background** | `#f4f4f8` | Text inputs, textarea, date trigger, nav buttons |
-| **Border** | `#ebebf0` | Top bar, sidebar, calendar time input, edit form inputs |
-| **Text primary** | `#333` | Task titles, body text, calendar days |
-| **Text secondary** | `#888` | Task descriptions |
-| **Text muted** | `#aaa` | Due dates, section labels' body, calendar day labels |
-| **Icon default** | `#ccc` | Action icon buttons at rest |
-| **Icon hover** | `#999` | Action icon buttons on hover |
-| **Label grey** | `#999` | Section labels (ACTIVE TASKS, ADD NEW, etc.) |
+| `--cream` | `#f5f6ff` | Page background |
+| `--cream-dark` | `#eaecfa` | Progress track, optional badge background, cancel button |
+| `--sidebar-bg` | `#eef0fb` | Sidebar background |
+| `--card` | `#ffffff` | Task cards, analytics card, calendar popup, inputs |
+| `--border` | `#d8dcf0` | All borders (topbar, sidebar, cards, inputs) |
+| `--text` | `#1a1a2e` | Primary text — titles, body |
+| `--text-2` | `#5a5a7a` | Secondary text — descriptions, cancel button text |
+| `--text-3` | `#9898b8` | Muted text — placeholders, due dates, labels |
+| `--accent` | `#4a6fd4` | Primary accent — buttons, checkboxes, donut, active stat, links |
+| `--accent-h` | `#3a5dc0` | Hover state for accent buttons |
+| `--accent-s` | `#eef1fc` | Accent surface — calendar day hover, drag-over background |
+| `--pink` | `#c94fb5` | Secondary accent — done stat value, calendar link, confetti |
+
+**Gradient:** Title and progress bar use `linear-gradient(90deg, #4a6fd4, #c94fb5)` — blue to pink, inspired by the app's colour identity.
 
 ---
 
 ## Typography
 
-**Font:** Roboto (Google Fonts) — weights 400, 500, 700, 900
+**Fonts:** Google Fonts
+- **Playfair Display** (serif) — title and stat values, weights 400/600, italic for title
+- **DM Sans** (sans-serif) — all other text, weights 300/400/500/600
 
-| Element | Size | Weight | Colour |
-|---|---|---|---|
-| App title ("My Tasks") | 22px | 400 | `#7a8fa6` |
-| Section label | 11px | 700 | `#999` |
-| Task title | 15px | 500 | `#333` |
-| Task description | 13px | 400 | `#888` |
-| Task due date | 12px | 400 | `#aaa` |
-| Calendar link | 12px | 400 | `#8b7fd4` |
-| Stat value | 28px | 800 | varies by type |
-| Stat label | 11px | 700 | `#aaa` |
-| Button text | 14–15px | 600 | `#fff` |
+| Element | Font | Size | Weight | Colour |
+|---|---|---|---|---|
+| App title ("My Tasks") | Playfair Display italic | 24px | 400 | gradient (blue→pink) |
+| Stat values | Playfair Display | 30px | 600 | varies (see palette) |
+| Section label | DM Sans | 10px | 600 | `--text-3` |
+| Task title | DM Sans | 14px | 400 | `--text` |
+| Task description | DM Sans | 12px | 400 | `--text-2` |
+| Task due date | DM Sans | 11px | 400 | `--text-3` |
+| Calendar link | DM Sans | 11px | 400 | `--accent` |
+| Button text | DM Sans | 13–14px | 500 | `#fff` |
 
-Section labels are always **uppercase**, **letter-spacing: 1.2px**.
-
-App title has no letter-spacing (0) and no negative tracking — intentionally light and understated.
+Section labels are **uppercase**, **letter-spacing: 1.8px**.
 
 ---
 
@@ -49,11 +48,11 @@ App title has no letter-spacing (0) and no negative tracking — intentionally l
 
 | Token | Value | Usage |
 |---|---|---|
-| Card padding | `28px 24px` | Sidebar |
+| Sidebar padding | `28px 22px` | Sidebar |
 | Task area padding | `28px 32px` | Main content |
-| Top bar padding | `18px 32px` | Header |
-| Task card padding | `14px 18px` | Task row |
-| Gap between tasks | `10px` | Task list |
+| Top bar padding | `16px 32px` | Header |
+| Task card padding | `13px 16px` | Task row |
+| Gap between tasks | `8px` | Task list |
 | Gap between columns | `20px` | Task columns grid |
 | Sidebar width | `300px` | Fixed |
 
@@ -63,32 +62,29 @@ App title has no letter-spacing (0) and no negative tracking — intentionally l
 
 | Component | Radius |
 |---|---|
-| Analytics card, calendar popup | `20px` |
-| Task cards | `14px` |
-| Inputs, textarea, primary button | `12px` |
-| Edit form inputs | `10px` |
-| Save / cancel buttons | `10px` |
-| Calendar nav buttons | `10px` |
+| Analytics card | `14px` |
+| Task cards | `10px` |
+| Calendar popup | `14px` |
+| Inputs, textarea, primary button | `8px` |
+| Edit form inputs, save/cancel buttons | `7px` |
+| Calendar nav buttons | `7px` |
 | Progress bar | `99px` (pill) |
-| Dot indicators | `50%` (circle) |
+| Checkbox | `4px` |
+
+**Shadows:** Removed in favour of `1px solid var(--border)` borders throughout. Calendar popup retains a subtle shadow: `0 8px 32px rgba(28,25,23,0.12)`.
 
 ---
 
 ## Icons
 
-All action icons are **plain Unicode characters** (not emoji) so they inherit `color` from CSS. Emoji render in fixed colour and ignore CSS `color`.
-
 | Icon | Unicode | Usage | Tooltip |
 |---|---|---|---|
 | `✓` | U+2713 | Mark task as done | "Mark as done" |
-| `↩` | U+21A9 | Recover completed task | "Recover task" |
 | `✎` | U+270E | Edit active task | "Edit task" |
 | `🗑` | emoji | Delete task | "Delete permanently" |
 | inline SVG | — | Date picker trigger | — |
 
-**Icon button style:** `color: #ccc` at rest → `color: #999` on hover. No background, no border.
-
-> Note: `🗑` is currently an emoji and renders in its native colour. To keep full consistency, consider replacing it with `␡` (U+2421) or a similar plain character in a future iteration.
+**Icon button style:** `color: var(--border)` at rest → `color: var(--text-2)` on hover. No background, no border.
 
 ---
 
@@ -96,57 +92,57 @@ All action icons are **plain Unicode characters** (not emoji) so they inherit `c
 
 ### Buttons
 
-**Primary (purple):** background `#8b7fd4`, hover `#7a6ec3`, white text, `border-radius: 12px`, padding `13px`, font-weight 600.
+**Primary (blue):** background `--accent` (`#4a6fd4`), hover `--accent-h` (`#3a5dc0`), white text, `border-radius: 8px`, padding `12px`, font-weight 500.
 
-**Save (edit form):** same purple, but `border-radius: 10px`, padding `8px 18px`, font-size 13px.
+**Save (edit form):** same blue, `border-radius: 7px`, padding `7px 16px`, font-size 13px.
 
-**Cancel (edit form):** background `#f4f4f8`, text `#888`, hover `#e8e8f0`, same sizing as Save.
+**Cancel (edit form):** background `--cream-dark`, text `--text-2`, hover `--border`, same sizing as Save.
 
-**Calendar Confirm:** background `#8b7fd4`, `border-radius: 10px`, padding `10px 18px`, font-size 14px.
+**Calendar Confirm:** background `--accent`, `border-radius: 7px`, padding `9px 16px`, font-size 13px.
 
-**Icon button:** no background or border, `font-size: 16px`, `color: #ccc` → `#999` on hover.
+**Icon button:** no background or border, `font-size: 15px`, `color: --border` → `--text-2` on hover.
 
 ### Inputs & Textarea
 
-Background `#f4f4f8`, no border, `border-radius: 12px`, padding `12px 16px`, font-size 14px, placeholder colour `#bbb`. Edit-form inputs use a `1px solid #ebebf0` border instead of the filled background.
+`1px solid var(--border)` border, `border-radius: 8px`, padding `11px 14px`, background `var(--card)`, font-size 14px, placeholder colour `--text-3`. Border transitions to `--accent` on focus.
 
 ### Task Card
 
-White background (`#fff`), `border-radius: 14px`, `box-shadow: 0 1px 4px rgba(0,0,0,0.05)`. Flex row: coloured dot → content area → action buttons.
+White background (`--card`), `border-radius: 10px`, `1px solid var(--border)` border. Subtle border darkens slightly on hover. Flex row: checkbox → content area → action buttons. No box-shadow.
 
-**Dot colours** rotate across tasks: `#8b7fd4` → `#5bb8f5` → `#f472a8` (index % 3).
-
-Completed tasks have `text-decoration: line-through` and `color: #bbb` on the title.
+Completed tasks have `text-decoration: line-through` and `color: --text-3` on the title.
 
 ### Analytics Card
 
-White card, `border-radius: 16px`, `box-shadow: 0 1px 4px rgba(0,0,0,0.05)`. Three regions: donut SVG + stat numbers (left), progress bar (right).
+White card (`--card`), `border-radius: 14px`, `1px solid var(--border)`. Three regions: donut SVG + stat numbers (left), progress bar (right).
 
-**Donut:** SVG circle, track colour `#f0f0f5`, fill colour `#8b7fd4`, animates with CSS `transition: stroke-dasharray 0.4s ease`.
+**Donut:** SVG circle, track colour `#d8dcf0`, fill colour `#4a6fd4`, animates with CSS `transition: stroke-dasharray 0.4s ease`.
 
-**Progress bar:** track `#f0f0f5`, fill `linear-gradient(90deg, #8b7fd4, #5bb8f5)`, `border-radius: 99px`, `transition: width 0.4s ease`.
+**Progress bar:** track `--cream-dark`, fill `linear-gradient(90deg, #4a6fd4, #c94fb5)`, `border-radius: 99px`, `transition: width 0.4s ease`.
+
+**Stat values:** Total → `--text`, Active → `--accent` (blue), Done → `--pink`.
 
 ### Calendar Popup
 
-White card, `border-radius: 20px`, `box-shadow: 0 8px 32px rgba(0,0,0,0.13)`. Opens downward from the date trigger (`top: calc(100% + 8px)`). Selected day: filled `#8b7fd4` circle with white text.
+White card (`--card`), `border-radius: 14px`, `1px solid var(--border)`, `box-shadow: 0 8px 32px rgba(28,25,23,0.12)`. Opens downward from the date trigger. Selected day: filled `--accent` circle with white text. Hover: `--accent-s` background with `--accent` text.
 
-**Default state:** Today's date is pre-selected when the popup opens (highlighted + shown in footer). The hidden `#new-due` input is only populated when the user clicks "Confirm", keeping the field genuinely optional. After a task is added, the picker resets to today.
+**Default state:** Today's date is pre-selected when the popup opens. The hidden `#new-due` input is only populated on "Confirm" — field remains optional. Resets to today after each task is added.
 
 ### Date Trigger — Optional Badge
 
-The date trigger button contains an `optional` pill badge (`<span class="optional-badge">`) between the display text and the calendar icon. Badge style: 10px, weight 600, color `#bbb`, background `#ebebf0`, `border-radius: 99px`. The badge is hidden via `.date-trigger.has-date .optional-badge { display: none }` once a date is confirmed.
+The date trigger button contains an `optional` pill badge between the display text and the calendar icon. Badge: 10px, weight 500, color `--text-3`, background `--cream-dark`, `border-radius: 99px`. Hidden via `.date-trigger.has-date .optional-badge { display: none }` once a date is confirmed.
 
 ### Drag-and-Drop (Active Tasks)
 
-Active task cards have `draggable="true"` and a `cursor: grab` style. While dragging over a target card it receives `.drag-over`: `border: 2px dashed #8b7fd4` and `background: #f8f6ff`. Dropping calls `PUT /tasks/reorder` to persist the new order. Done tasks are not draggable.
+Active task cards have `draggable="true"` and `cursor: grab`. Drag-over state: `border: 2px dashed var(--accent)` and `background: var(--accent-s)`. Dropping calls `PUT /tasks/reorder`. Done tasks are not draggable.
 
 ### Completion Animation
 
 When an active task is ticked:
-1. The checkbox immediately shows `.checked` (purple fill) and plays the `celebrate` keyframe — a scale pulse with a fading purple ring shadow (0.55s).
-2. 18 confetti dots (`<div class="confetti-dot">`) burst radially from the checkbox center, each flying to a random distance (28–56px) over 0.7s, then are removed from the DOM.
-3. The task stays in the active list for ~900ms before `loadTasks()` re-renders it into the completed column.
-4. Confetti dot colors: `#8b7fd4`, `#5bb8f5`, `#f5a623`, `#7ed321`, `#ff6b6b`. Dots are `position: fixed`, `z-index: 9999`, 7×7px circles.
+1. Checkbox shows `.checked` (blue fill) and plays the `celebrate` keyframe — scale pulse with fading blue ring shadow (0.55s).
+2. 18 confetti dots burst radially from the checkbox, flying 28–56px over 0.7s then removed from the DOM.
+3. Task stays visible for ~900ms before moving to the completed column.
+4. Confetti colours: `#4a6fd4`, `#c94fb5`, `#7b9de8`, `#e070c8`, `#8faee0`. Dots: `position: fixed`, `z-index: 9999`, 7×7px circles.
 
 ---
 
@@ -154,7 +150,7 @@ When an active task is ticked:
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  TOPBAR: title (left) + search (right)          │  white, border-bottom
+│  TOPBAR: title (left) + search (right)          │  --cream bg, border-bottom
 ├──────────────┬──────────────────────────────────┤
 │              │  Analytics card                  │
 │   SIDEBAR    │  ─────────────────────────────   │

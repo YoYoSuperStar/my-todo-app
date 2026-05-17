@@ -11,7 +11,7 @@ python app.py
 Runs on `http://localhost:5000`. On first run (or if `token.json` is missing/expired), a browser window will open for Google OAuth — this is expected.
 
 **Frontend:**
-Open `index.html` directly in a browser. It hardcodes `http://localhost:5000` as the API base.
+Open `index.html` directly in a browser. It hardcodes `http://localhost:5000` as the API base. Fonts loaded from Google Fonts (Playfair Display + DM Sans). No build step required.
 
 ## Architecture
 

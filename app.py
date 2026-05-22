@@ -72,8 +72,8 @@ def add_task():
                 event = {
                     "summary": title,
                     "description": description or "",
-                    "start": {"dateTime": dt.isoformat(), "timeZone": "America/New_York"},
-                    "end": {"dateTime": (dt + timedelta(hours=1)).isoformat(), "timeZone": "America/New_York"},
+                    "start": {"dateTime": dt.isoformat(), "timeZone": "Europe/London"},
+                    "end": {"dateTime": (dt + timedelta(hours=1)).isoformat(), "timeZone": "Europe/London"},
                 }
                 created = service.events().insert(calendarId="primary", body=event).execute()
                 task["calendar_event_id"] = created["id"]

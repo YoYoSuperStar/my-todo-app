@@ -20,6 +20,7 @@ Open `index.html` directly in a browser. It hardcodes `http://localhost:5000` as
 | `app.py` | Flask REST API — see routes table below |
 | `index.html` | Single-page frontend; vanilla JS, no build step, talks to `app.py` |
 | `tasks.json` | Flat JSON array — the only persistence layer |
+| `daily_note.py` | Standalone script that generates the Obsidian daily note (see "Obsidian daily note" below) |
 | `assets/` | Static assets; `screenshot.png` used in README |
 
 **API routes:**
@@ -37,9 +38,33 @@ Open `index.html` directly in a browser. It hardcodes `http://localhost:5000` as
 
 **Task ordering:** New tasks are prepended (index 0). Active tasks can be manually reordered via drag-and-drop in the UI; the new order is persisted immediately via `PUT /tasks/reorder`.
 
-**Google Calendar:** `app.py` creates Google Calendar **events** (not Google Tasks) when a due date is set. Events use the Calendar API (`google-api-python-client`, scope `https://www.googleapis.com/auth/calendar`), are created on the primary calendar with a 1-hour duration, and the `htmlLink` is stored as `calendar_event_link` on the task. OAuth flow: `credentials.json` → `token.json` (auto-generated on first auth, refreshed automatically). The frontend date picker sends an ISO datetime string which `app.py` parses directly. Timezone is hardcoded to `America/New_York`. Calendar errors are caught and logged but do not block task creation.
+**Google Calendar:** `app.py` creates Google Calendar **events** (not Google Tasks) when a due date is set. Events use the Calendar API (`google-api-python-client`, scope `https://www.googleapis.com/auth/calendar`), are created on the primary calendar with a 1-hour duration, and the `htmlLink` is stored as `calendar_event_link` on the task. OAuth flow: `credentials.json` → `token.json` (auto-generated on first auth, refreshed automatically). The frontend date picker sends an ISO datetime string which `app.py` parses directly. Timezone is hardcoded to `Europe/London`. Calendar errors are caught and logged but do not block task creation.
 
 
 ## Google OAuth setup
 
 `credentials.json` must exist (Google Cloud Console → OAuth 2.0 Client ID, Desktop app type). `token.json` is auto-generated on first auth and refreshed automatically when expired.
+
+## Obsidian daily note
+
+`daily_note.py` is a standalone script (no Flask dependency) that writes a markdown daily note to `~/Documents/ObsidianVault/Daily/YYYY-MM-DD.md`. Reads `tasks.json` and the user's primary Google Calendar (reusing `token.json`).
+
+**Sections written:**
+- **Tasks due today** — undone tasks with `due` matching today's date, merged with non-cycling calendar events, sorted by time
+- **Training plan** — calendar events matching personal training keywords (band session, intervals, endurance ride, recovery, FTP test, Zwift, TrainerRoad, etc.)
+- **Live Cycling Events** — pro racing keywords (Giro, Vuelta, Tour de, UCI, world championship, classics, Paris-Roubaix, Milan-San Remo)
+- **Community rides/events** — group/club/social ride keywords plus named series (Porteur, Glorious Gravel, etc.)
+- **Overdue** — undone tasks with `due` before today
+- **In-progress ideas** — undone tasks with no `due` date
+
+Categorization order is live → community → training (first match wins). Keyword lists live at the top of `daily_note.py` and are intended to be edited as new event names appear.
+
+**Dedup:** events whose `id` matches a `calendar_event_id` on a task in `tasks.json` are dropped from the calendar pull so they only appear once (as the task).
+
+**Scheduling:** a Windows Scheduled Task named `ClaudePlayground-DailyNote` runs `python daily_note.py` daily at 09:00. Manage with:
+```
+Get-ScheduledTask -TaskName ClaudePlayground-DailyNote
+Unregister-ScheduledTask -TaskName ClaudePlayground-DailyNote
+```
+
+Timezone is `Europe/London`, matching `app.py`.

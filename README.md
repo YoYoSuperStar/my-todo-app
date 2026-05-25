@@ -9,7 +9,7 @@ A personal task manager with a web UI and REST API — built with Flask and vani
 ## Features
 
 - **Add, edit, and delete tasks** with an optional description and due date
-- **Google Calendar integration** — tasks with a due date create a Calendar event automatically
+- **Google Calendar integration** — tasks with a due date create a Calendar event automatically, and edits/deletes sync back to the event
 - **Drag-and-drop reordering** — rearrange active tasks by dragging
 - **Completion animation** — confetti burst when you tick a task done
 - **Analytics** — live donut chart and weekly progress bar
@@ -102,8 +102,8 @@ To remove: `Unregister-ScheduledTask -TaskName ClaudePlayground-DailyNote`.
 | Method | Route | Description |
 |---|---|---|
 | GET | `/tasks` | List all tasks |
-| POST | `/tasks` | Create a task |
-| PUT | `/tasks/<index>` | Update a task |
+| POST | `/tasks` | Create a task (creates Calendar event if `due` is set) |
+| PUT | `/tasks/<index>` | Update a task (creates / updates / removes the Calendar event to match the new `due`) |
 | PATCH | `/tasks/<index>` | Toggle done/undone |
 | PUT | `/tasks/reorder` | Persist drag-and-drop order |
-| DELETE | `/tasks/<index>` | Delete a task |
+| DELETE | `/tasks/<index>` | Delete a task (cancels the linked Calendar event) |

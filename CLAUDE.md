@@ -38,7 +38,9 @@ Open `index.html` directly in a browser. It hardcodes `http://localhost:5000` as
 
 **Task ordering:** New tasks are prepended (index 0). Active tasks can be manually reordered via drag-and-drop in the UI; the new order is persisted immediately via `PUT /tasks/reorder`.
 
-**Google Calendar:** `app.py` creates Google Calendar **events** (not Google Tasks) when a due date is set. Events use the Calendar API (`google-api-python-client`, scope `https://www.googleapis.com/auth/calendar`), are created on the primary calendar with a 1-hour duration, and the `htmlLink` is stored as `calendar_event_link` on the task. OAuth flow: `credentials.json` → `token.json` (auto-generated on first auth, refreshed automatically). The frontend date picker sends an ISO datetime string which `app.py` parses directly. Timezone is hardcoded to `Europe/London`. Calendar errors are caught and logged but do not block task creation.
+**Google Calendar:** `app.py` creates Google Calendar **events** (not Google Tasks) when a due date is set. Events use the Calendar API (`google-api-python-client`, scope `https://www.googleapis.com/auth/calendar`), are created on the primary calendar with a 1-hour duration, and the `htmlLink` is stored as `calendar_event_link` on the task. OAuth flow: `credentials.json` → `token.json` (auto-generated on first auth, refreshed automatically). The frontend date picker sends an ISO datetime string which `app.py` parses directly. Timezone is hardcoded to `Europe/London`. Calendar errors are caught and logged but do not block task operations.
+
+**Calendar sync (POST / PUT / DELETE):** all three mutating routes sync to Google Calendar via helpers in `app.py` — `create_calendar_event`, `update_calendar_event`, `delete_calendar_event`. PUT diff logic: gaining a due date creates an event; changing date/title/description with an existing event updates it; clearing the due date cancels the event. DELETE cancels the linked event before removing the task.
 
 
 ## Google OAuth setup

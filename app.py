@@ -43,6 +43,42 @@ def get_calendar_service():
     return build("calendar", "v3", credentials=creds)
 
 
+def _event_body(title, description, dt):
+    return {
+        "summary": title,
+        "description": description or "",
+        "start": {"dateTime": dt.isoformat(), "timeZone": "Europe/London"},
+        "end": {"dateTime": (dt + timedelta(hours=1)).isoformat(), "timeZone": "Europe/London"},
+    }
+
+
+def create_calendar_event(title, description, dt):
+    try:
+        service = get_calendar_service()
+        created = service.events().insert(calendarId="primary", body=_event_body(title, description, dt)).execute()
+        return created["id"], created.get("htmlLink")
+    except Exception as e:
+        print(f"Calendar create error: {e}")
+        return None, None
+
+
+def update_calendar_event(event_id, title, description, dt):
+    try:
+        service = get_calendar_service()
+        updated = service.events().update(calendarId="primary", eventId=event_id, body=_event_body(title, description, dt)).execute()
+        return updated["id"], updated.get("htmlLink")
+    except Exception as e:
+        print(f"Calendar update error: {e}")
+        return event_id, None
+
+
+def delete_calendar_event(event_id):
+    try:
+        get_calendar_service().events().delete(calendarId="primary", eventId=event_id).execute()
+    except Exception as e:
+        print(f"Calendar delete error: {e}")
+
+
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
     return jsonify(load_tasks())
@@ -67,19 +103,9 @@ def add_task():
         dt = dateparser.parse(due_input, settings={"PREFER_DATES_FROM": "future"})
         if dt:
             task["due_formatted"] = dt.strftime("%A, %d %B %Y at %H:%M")
-            try:
-                service = get_calendar_service()
-                event = {
-                    "summary": title,
-                    "description": description or "",
-                    "start": {"dateTime": dt.isoformat(), "timeZone": "Europe/London"},
-                    "end": {"dateTime": (dt + timedelta(hours=1)).isoformat(), "timeZone": "Europe/London"},
-                }
-                created = service.events().insert(calendarId="primary", body=event).execute()
-                task["calendar_event_id"] = created["id"]
-                task["calendar_event_link"] = created.get("htmlLink")
-            except Exception as e:
-                print(f"Calendar error: {e}")
+            event_id, event_link = create_calendar_event(title, description, dt)
+            task["calendar_event_id"] = event_id
+            task["calendar_event_link"] = event_link
 
     tasks = load_tasks()
     tasks.insert(0, task)
@@ -119,15 +145,30 @@ def update_task(index):
     due_input = (data.get("due") or "").strip()
 
     task = tasks[index]
+    existing_event_id = task.get("calendar_event_id")
     task["title"] = title
     task["description"] = description or None
     task["due"] = due_input or None
     task["due_formatted"] = None
 
+    dt = None
     if due_input:
         dt = dateparser.parse(due_input, settings={"PREFER_DATES_FROM": "future"})
         if dt:
             task["due_formatted"] = dt.strftime("%A, %d %B %Y at %H:%M")
+
+    if dt and existing_event_id:
+        _, link = update_calendar_event(existing_event_id, title, description, dt)
+        if link:
+            task["calendar_event_link"] = link
+    elif dt and not existing_event_id:
+        event_id, event_link = create_calendar_event(title, description, dt)
+        task["calendar_event_id"] = event_id
+        task["calendar_event_link"] = event_link
+    elif not dt and existing_event_id:
+        delete_calendar_event(existing_event_id)
+        task["calendar_event_id"] = None
+        task["calendar_event_link"] = None
 
     save_tasks(tasks)
     return jsonify(task)
@@ -148,7 +189,9 @@ def delete_task(index):
     tasks = load_tasks()
     if index < 0 or index >= len(tasks):
         return jsonify({"error": "Task not found"}), 404
-    tasks.pop(index)
+    removed = tasks.pop(index)
+    if removed.get("calendar_event_id"):
+        delete_calendar_event(removed["calendar_event_id"])
     save_tasks(tasks)
     return jsonify({"success": True})
 

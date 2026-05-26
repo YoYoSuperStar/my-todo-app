@@ -86,6 +86,13 @@ Register-ScheduledTask -TaskName "ClaudePlayground-DailyNote" -Action $action -T
 
 To remove: `Unregister-ScheduledTask -TaskName ClaudePlayground-DailyNote`.
 
+If the note stops appearing in Obsidian, check the task's last run:
+```powershell
+Get-ScheduledTaskInfo -TaskName ClaudePlayground-DailyNote   # LastRunTime, LastTaskResult (0 = OK)
+(Get-ScheduledTask -TaskName ClaudePlayground-DailyNote).Actions  # confirms WorkingDirectory matches the repo path
+```
+A non-zero `LastTaskResult` (e.g. `2147942667` = directory not found) usually means the repo was moved and the task's `WorkingDirectory` is stale — re-point it with `Set-ScheduledTask`.
+
 ## Project structure
 
 | File | Role |

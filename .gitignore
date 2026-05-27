@@ -12,4 +12,5 @@ skills-lock.json
 .agents/
 
 # Claude Code
-.claude/
+.claude/*
+!.claude/commands/

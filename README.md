@@ -16,6 +16,7 @@ A personal task manager with a web UI and REST API — built with Flask and vani
 - **Search** — filter tasks instantly from the top bar
 - **Responsive** — works on mobile and desktop
 - **Obsidian daily note** — `daily_note.py` writes a morning briefing into your Obsidian vault, combining today's tasks and Google Calendar events with cycling categorization
+- **Obsidian inbox** — capture ideas in `Inbox.md` during the day, then run `/schedule-my-inbox` in Claude Code to turn them into scheduled tasks with calendar events
 
 ## Running the app
 
@@ -92,6 +93,18 @@ Get-ScheduledTaskInfo -TaskName ClaudePlayground-DailyNote   # LastRunTime, Last
 (Get-ScheduledTask -TaskName ClaudePlayground-DailyNote).Actions  # confirms WorkingDirectory matches the repo path
 ```
 A non-zero `LastTaskResult` (e.g. `2147942667` = directory not found) usually means the repo was moved and the task's `WorkingDirectory` is stale — re-point it with `Set-ScheduledTask`.
+
+## Obsidian inbox + `/schedule-my-inbox`
+
+For ideas you want to capture during the day without committing to a date yet, jot them into `~/Documents/ObsidianVault/Inbox.md` under the **"To be scheduled"** heading. This file is hand-edited only — `daily_note.py` never touches it, so nothing gets overwritten.
+
+When you're ready to schedule a batch, open Claude Code in this folder and run:
+
+```
+/schedule-my-inbox
+```
+
+Claude will read the inbox, ask you for a date and time for each item, POST them to the API (which creates the Google Calendar events), and clear the inbox back to its empty state. The command lives at [.claude/commands/schedule-my-inbox.md](.claude/commands/schedule-my-inbox.md).
 
 ## Project structure
 

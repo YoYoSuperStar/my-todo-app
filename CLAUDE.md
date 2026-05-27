@@ -73,3 +73,9 @@ Unregister-ScheduledTask -TaskName ClaudePlayground-DailyNote
 If the project is ever moved or renamed, re-point the task with `Set-ScheduledTask -Action (New-ScheduledTaskAction -Execute <python> -Argument "daily_note.py" -WorkingDirectory <new-path>)`.
 
 Timezone is `Europe/London`, matching `app.py`.
+
+## Obsidian inbox
+
+`~/Documents/ObsidianVault/Inbox.md` is a hand-edited capture file for ideas the user wants to schedule later. It is **never** touched by `daily_note.py` — only by the user (during the day) and by the `/schedule-my-inbox` slash command (when invoked).
+
+The `/schedule-my-inbox` command (`.claude/commands/schedule-my-inbox.md`) reads the "To be scheduled" section of `Inbox.md`, prompts for due dates, POSTs each item to `/tasks` (which creates the Calendar event), and clears the inbox back to its empty state. If the user mentions adding things to capture during the day, point them at `Inbox.md` rather than editing daily notes (which get overwritten on the next 09:00 run).

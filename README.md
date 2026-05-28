@@ -76,11 +76,11 @@ python daily_note.py
 
 ### Schedule it (Windows)
 
-A Windows Scheduled Task can run the script automatically each morning:
+A Windows Scheduled Task can run the script automatically each morning. Use `pythonw.exe` (the windowless Python) so the task runs silently — `python.exe` opens a visible console window that's easy to close by mistake, which kills the script:
 
 ```powershell
-$python = (Get-Command python).Source
-$action = New-ScheduledTaskAction -Execute $python -Argument "daily_note.py" -WorkingDirectory "<path-to-this-repo>"
+$pythonw = (Get-Command pythonw).Source
+$action = New-ScheduledTaskAction -Execute $pythonw -Argument "daily_note.py" -WorkingDirectory "<path-to-this-repo>"
 $trigger = New-ScheduledTaskTrigger -Daily -At 9:00am
 Register-ScheduledTask -TaskName "ClaudePlayground-DailyNote" -Action $action -Trigger $trigger -Force
 ```
@@ -92,7 +92,9 @@ If the note stops appearing in Obsidian, check the task's last run:
 Get-ScheduledTaskInfo -TaskName ClaudePlayground-DailyNote   # LastRunTime, LastTaskResult (0 = OK)
 (Get-ScheduledTask -TaskName ClaudePlayground-DailyNote).Actions  # confirms WorkingDirectory matches the repo path
 ```
-A non-zero `LastTaskResult` (e.g. `2147942667` = directory not found) usually means the repo was moved and the task's `WorkingDirectory` is stale — re-point it with `Set-ScheduledTask`.
+Common non-zero `LastTaskResult` codes:
+- `2147942667` (`0x8007010B`) = directory not found → the repo was moved; re-point `WorkingDirectory` with `Set-ScheduledTask`.
+- `3221225786` (`0xC000013A`) = Ctrl+C / terminated → almost always means the task's console window was closed by mistake. Switch the task's `Execute` from `python.exe` to `pythonw.exe` so it runs windowless.
 
 ## Obsidian inbox + `/schedule-my-inbox`
 

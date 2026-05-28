@@ -63,14 +63,16 @@ Categorization order is live → community → training (first match wins). Keyw
 
 **Dedup:** events whose `id` matches a `calendar_event_id` on a task in `tasks.json` are dropped from the calendar pull so they only appear once (as the task).
 
-**Scheduling:** a Windows Scheduled Task named `ClaudePlayground-DailyNote` runs `python daily_note.py` daily at 09:00. The name retains the project's previous folder name (`Claude Playground`) — the project now lives at `C:\Users\joann\repos\to-do app` and the task's `WorkingDirectory` must point there, not the old path. Manage with:
+**Scheduling:** a Windows Scheduled Task named `ClaudePlayground-DailyNote` runs `pythonw.exe daily_note.py` daily at 09:00. Use **`pythonw.exe`** (not `python.exe`) so the task runs silently with no console window — a visible console window can be closed by mistake, which kills the script and leaves the day's note ungenerated (manifests as `LastTaskResult: 3221225786` / `0xC000013A` = Ctrl+C/terminated).
+
+The name retains the project's previous folder name (`Claude Playground`) — the project now lives at `C:\Users\joann\repos\to-do app` and the task's `WorkingDirectory` must point there, not the old path. Manage with:
 ```
 Get-ScheduledTask -TaskName ClaudePlayground-DailyNote
 (Get-ScheduledTask -TaskName ClaudePlayground-DailyNote).Actions  # check Execute + WorkingDirectory
 Get-ScheduledTaskInfo -TaskName ClaudePlayground-DailyNote        # LastRunTime + LastTaskResult
 Unregister-ScheduledTask -TaskName ClaudePlayground-DailyNote
 ```
-If the project is ever moved or renamed, re-point the task with `Set-ScheduledTask -Action (New-ScheduledTaskAction -Execute <python> -Argument "daily_note.py" -WorkingDirectory <new-path>)`.
+If the project is ever moved or renamed, re-point the task with `Set-ScheduledTask -Action (New-ScheduledTaskAction -Execute <pythonw> -Argument "daily_note.py" -WorkingDirectory <new-path>)`.
 
 Timezone is `Europe/London`, matching `app.py`.
 
